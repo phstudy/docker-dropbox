@@ -1,16 +1,20 @@
-FROM debian:jessie
-MAINTAINER Daniel Rodgers-Pryor <djrodgerspryor@gmail.com>
+FROM debian:jessie-slim
+MAINTAINER Study Hsueh <ph.study@gmail.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 # Following 'How do I add or remove Dropbox from my Linux repository?' - https://www.dropbox.com/en/help/246
-RUN echo 'deb http://linux.dropbox.com/debian jessie main' > /etc/apt/sources.list.d/dropbox.list \
-    && apt-key adv --keyserver pgp.mit.edu --recv-keys 1C61A2656FB57B7E4DE0F4C1FC918B335044912E \
+RUN set -x \
+    && echo 'deb http://linux.dropbox.com/debian jessie main' > /etc/apt/sources.list.d/dropbox.list \
+    && apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 1C61A2656FB57B7E4DE0F4C1FC918B335044912E \
     && apt-get -qqy update \
+    #
     # Note 'ca-certificates' dependency is required for 'dropbox start -i' to succeed
     && apt-get -qqy install ca-certificates curl python-gpgme dropbox python3 \
+    #
     # Perform image clean up.
     && apt-get -qqy autoclean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    #
     # Create service account and set permissions.
     && groupadd dropbox \
     && useradd -m -d /dbox -c "Dropbox Daemon Account" -s /usr/sbin/nologin -g dropbox dropbox
@@ -36,16 +40,19 @@ WORKDIR /
 # file system over time with rather large files written to /dbox and /tmp. The auto-update routine
 # also tries to restart the dockerd process (PID 1) which causes the container to be terminated.
 RUN mkdir -p /opt/dropbox \
+    #
     # Prevent dropbox to overwrite its binary
     && mv /dbox/.dropbox-dist/dropbox-lnx* /opt/dropbox/ \
     && mv /dbox/.dropbox-dist/dropboxd /opt/dropbox/ \
     && mv /dbox/.dropbox-dist/VERSION /opt/dropbox/ \
     && rm -rf /dbox/.dropbox-dist \
     && install -dm0 /dbox/.dropbox-dist \
+    #
     # Prevent dropbox to write update files
     && chmod u-w /dbox \
     && chmod o-w /tmp \
     && chmod g-w /tmp \
+    #
     # Prepare for command line wrapper
     && mv /usr/bin/dropbox /usr/bin/dropbox-cli
 
