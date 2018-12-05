@@ -1,24 +1,22 @@
-# Dropbox in Docker
-
-[hub]: https://hub.docker.com/r/drodgers/dropbox/
+# Dropbox in Docker [![Docker Build Status](https://img.shields.io/docker/build/study/docker-dropbox.svg)](https://hub.docker.com/r/study/docker-dropbox/)
 
 Run Dropbox inside Docker. Fully working with local host folder mount or inter-container linking (via `--volumes-from`).
 
-This repository provides the [drodgers/dropbox](https://registry.hub.docker.com/u/drodgers/dropbox/) image.
+This repository provides the [study/docker-dropbox](https://registry.hub.docker.com/u/study/docker-dropbox/) automated build image.
 
-Forked from https://github.com/janeczku/docker-dropbox to add [dimaryaz's patch](https://github.com/dimaryaz/dropbox_ext4) to keep dropbox working on non-ext4 filesystems.
+Forked from https://github.com/elliottpost/docker-dropbox.
 
 ## Usage examples
 
 ### Quickstart
 
-    docker run -d --restart=always --name=dropbox drodgers/dropbox
+    docker run -d --restart=always --name=dropbox study/dropbox
 
 ### Dropbox data mounted to local folder on the host
 
     docker run -d --restart=always --name=dropbox \
     -v /path/to/localfolder:/dbox/Dropbox \
-    drodgers/dropbox
+    study/dropbox
 
 ### Run dropbox with custom user/group id
 This fixes file permission errrors that might occur when mounting the Dropbox file folder (`/dbox/Dropbox`) from the host or a Docker container volume. You need to set `DBOX_UID`/`DBOX_GID` to the user id and group id of whoever owns these files on the host or in the other container.
@@ -26,13 +24,13 @@ This fixes file permission errrors that might occur when mounting the Dropbox fi
     docker run -d --restart=always --name=dropbox \
     -e DBOX_UID=110 \
     -e DBOX_GID=200 \
-    drodgers/dropbox
+    study/dropbox
 
 ### Enable LAN Sync
 
     docker run -d --restart=always --name=dropbox \
     --net="host" \
-    drodgers/dropbox
+    study/dropbox
 
 ## Linking to Dropbox account after first start
 
